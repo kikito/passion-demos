@@ -1,4 +1,4 @@
 function love.conf(t)
-   t.title = "Avalanche of PÄSSION"
+   t.title = "PÄSSION Physics platformer"
    t.author = "kikito"
 end
