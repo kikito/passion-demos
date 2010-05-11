@@ -60,6 +60,7 @@ function Play:enterState()
   local game = self
 
   self.piano = Piano:new(80,150)
+  self:observe('keypressed_tab', function() self.piano:toogleShowKeys() end)
 
   self.backButton = passion.gui.Button:new({
     text='Back',
@@ -81,4 +82,6 @@ function Play:exitState()
 
   self.piano:destroy()
   self.piano = nil
+  
+  self:stopObserving('keypressed_tab')
 end

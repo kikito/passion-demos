@@ -27,7 +27,9 @@ end
 local image = passion.graphics.getImage('images/pianoKeys.png')
 
 function Key:initialize(piano, name, key, x, y, quadX, quadY, width, height )
-  super.initialize(self, {width=width, height=height, x=x, y=y, focus=false})
+  super.initialize(self, {
+    width=width, height=height, x=x, y=y,
+    focus=false, borderColor=false, fontColor=passion.colors.green})
   self.name = name
   self.path = 'sounds/' .. name .. '.mp3'
   self.quadX = quadX
@@ -37,6 +39,14 @@ function Key:initialize(piano, name, key, x, y, quadX, quadY, width, height )
   self.key = key
   self:observe('keypressed_' .. key, 'keypressed')
   self:observe('keyreleased_' .. key, 'keyreleased')
+  self:setDrawOrder(0)
+end
+
+function Key:getText()
+  if(self.piano.showKeys == true) then
+    return self.key or ''
+  end
+  return ''
 end
 
 function Key:calculateQuads()
@@ -48,6 +58,7 @@ end
 
 function Key:draw()
   passion.graphics.drawq(self.releasedQuad, self:getPosition())
+  super.draw(self)
 end
 
 function Key:keypressed()
@@ -76,6 +87,7 @@ end
 
 function KeyboardPressed:draw()
   passion.graphics.drawq(self.pressedQuad, self:getPosition())
+  super.draw(self)
 end
 
 function KeyboardPressed:exitState()
@@ -94,7 +106,6 @@ end
 function Key:onRelease()
   if(self.source~=nil) then
     passion.timer.effect(self.source, 0.2, {volume=0}, nil, _resetSource, self.source)
-    self.source = nil
   end
 end
 
@@ -107,6 +118,7 @@ function LKey:initialize(piano, name, key, x, y, quadX, quadY, width, height, to
   self.topWidth = topWidth
   self.topHeight = topHeight
   super.initialize(self, piano, name, key, x, y, quadX, quadY, width, height)
+  self:setDrawOrder(1)
 end
 
 function LKey:calculateQuads()
@@ -126,12 +138,14 @@ function LKey:draw()
   local x,y = self:getPosition()
   passion.graphics.drawq(self.topReleasedQuad, x+self.topX, y)
   passion.graphics.drawq(self.releasedQuad, x, y+self.topHeight)
+  passion.gui.Button.draw(self)
 end
 
 function LKey.states.KeyboardPressed:draw()
   local x,y = self:getPosition()
   passion.graphics.drawq(self.topPressedQuad, x+self.topX, y)
   passion.graphics.drawq(self.pressedQuad, x, y+self.topHeight)
+  passion.gui.Button.draw(self)
 end
 
 LKey.states.Pressed.draw = LKey.states.KeyboardPressed.draw
@@ -161,6 +175,8 @@ function Piano:initialize(x,y)
     backgroundColor = passion.black, borderColor=passion.white, borderWidth=2
   })
   
+  self.showKeys = true
+  
   local owidth=291
 
   --                            name   key          x,y   cx,cy   w,h   topx, tw,th
@@ -189,7 +205,10 @@ function Piano:initialize(x,y)
   self:addChild(  Key:new(self, 'O2A#', 'w', owidth+245,0, 245,0,  22,95) )
   self:addChild( LKey:new(self, 'O2B' , 'x', owidth+249,0, 249,0,  42,175, 18,  24,95) )
   self:addChild(  Key:new(self, 'O3C' , 'y', owidth+291,0, 291,0,  40,175) )
+end
 
+function Piano:toogleShowKeys()
+  self.showKeys = not self.showKeys
 end
 
 
