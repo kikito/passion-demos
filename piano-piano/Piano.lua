@@ -19,9 +19,11 @@ local notes = {
   'O3C'
 }
 
+local sources = {}
+
 -- load sounds & images
 for _,name in ipairs(notes) do
-  passion.audio.getSource('sounds/' .. name .. '.mp3', 'static', 2)
+  sources[name] = passion.audio.getSource('sounds/' .. name .. '.mp3', 'static', 3)
 end
 
 local image = passion.graphics.getImage('images/pianoKeys.png')
@@ -31,7 +33,7 @@ function Key:initialize(piano, name, key, x, y, quadX, quadY, width, height )
     width=width, height=height, x=x, y=y,
     focus=false, borderColor=false, fontColor=passion.colors.green})
   self.name = name
-  self.path = 'sounds/' .. name .. '.mp3'
+  self.source = sources[name]
   self.quadX = quadX
   self.quadY = quadY
   self.piano = piano
@@ -99,13 +101,12 @@ end
 Key.states.Pressed.draw = KeyboardPressed.draw
 
 function Key:onPress()
-  self.source = passion.audio.getSource(self.path, 'static')
-  passion.audio.play(self.source)
+  self.playingSource = passion.audio.play(self.source)
 end
 
 function Key:onRelease()
-  if(self.source~=nil) then
-    passion.timer.effect(self.source, 0.2, {volume=0}, nil, _resetSource, self.source)
+  if(self.playingSource~=nil) then
+    passion.timer.effect(self.playingSource, 0.3, {volume=0}, nil, _resetSource, self.playingSource)
   end
 end
 
