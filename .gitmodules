@@ -1,0 +1,3 @@
+[submodule "piano-piano/passion"]
+	path = piano-piano/passion
+	url = git@github-kikito:kikito/passion.git
