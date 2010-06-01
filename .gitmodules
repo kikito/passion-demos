@@ -4,3 +4,6 @@
 [submodule "avalanche/passion"]
 	path = avalanche/passion
 	url = git@github-kikito:kikito/passion.git
+[submodule "physics-platformer/passion"]
+	path = physics-platformer/passion
+	url = git@github-kikito:kikito/passion.git
